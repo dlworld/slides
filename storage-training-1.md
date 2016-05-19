@@ -70,7 +70,7 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 - 块存储，磁盘
 - 对象存储，键值存储，接口GET、PUT、DELETE和其它扩展
 
-﻿
+
 
 存储方式	| 技术实现	| 优势	| 劣势 |	代表作
 --|--|--|--|--
@@ -88,7 +88,6 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 
 
 ![storage-arch](images/storage-arch.png)
-
 
 
 
@@ -159,6 +158,7 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
  - 分级存储（HSM）
 
 
+
 ## SAN与NAS区别
 NAS：提供文件服务
 SAN：提供块设备服务
@@ -194,7 +194,7 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 
-**优点**
+### 优点
 - 可连接性能超群，基于现有以太网络架构，可自然扩充到LAN、MAN、WAN，是远程数据传输的最佳方案。
 - 提供与FC同级别的高可用
 - 可加强的性能及高可用性、扩展性
@@ -205,7 +205,6 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 ![iscsi-arch](images/iscsi-arch.png)
-
 
 
 
@@ -452,9 +451,11 @@ Do you really want to remove active logical volume test1? [y/n]: y
 ```
 
 
+
 - 激活
 - 扩展
 - 减小
+
 
 
 ##精简格式
@@ -599,10 +600,9 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 - 冗余，A/P模式，使用一半的路径，当前路径出现故障即切换到备选路径。
 - 提高性能，A/A模式，I/O以round-robin方式通过所有路径。
 
+﻿
 
-
-Active/Passive模式
-![active-passive](images/active-passive.png)
+![active-passive](images/active-passive.png "Active/Passive模式")
 
 
 
@@ -615,8 +615,7 @@ Active/Passive模式
 
 
 
-Active/Active模式
-![active-active](images/active-active.png)
+![active-active](images/active-active.png "Active/Active模式")
 
 
 
