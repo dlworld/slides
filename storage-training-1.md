@@ -5,8 +5,9 @@
 
 # 存储系统
 - 存储设备
+- 存储分类
 - 存储协议
-﻿
+
 
 
 ## 存储设备
@@ -36,13 +37,11 @@
 
 
 
-
 | 协议 | 速率 | 优点 | 缺点 |
 |---|---|---|---|
 | IDE | 133MB/s | 
 | SATA II | 300MB/s |
 | SATA III | 600MB/s |
-
 
 
 
@@ -66,7 +65,22 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 
 
 
-# 存储协议
+## 存储类型
+- 文件存储，文件访问接口
+- 块存储，磁盘
+- 对象存储，键值存储，接口GET、PUT、DELETE和其它扩展
+
+﻿
+
+存储方式	| 技术实现	| 优势	| 劣势 |	代表作
+--|--|--|--|--
+块存储 |	裸盘上划分逻辑卷，逻辑卷格式化成任意文件系统	| 支持多种文件系统，传输速度快，提供硬件容错机制	| 无法实现网络共享 |	FC-SAN，iSCSI
+文件存储	| 在格式化的磁盘上存储文件 |	提供网络共享	| 网络传输速度制约读写速度，分层目录结构限制可扩展性 |	NFS，FAT，EXT3
+对象存储	| 以灵活可定制的对象为存储单元，元数据服务器提供快速并发寻址	| 读写速度较快的同时支持网络共享，对象灵活定义|	管理软件的购买、使用和运维成本高	| Swift
+
+
+
+## 存储协议
 - SCSI
 - iSCSI
 - FC
@@ -145,6 +159,12 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
  - 分级存储（HSM）
 
 
+## SAN与NAS区别
+NAS：提供文件服务
+SAN：提供块设备服务
+![nas-san](images/nas-san.png)
+
+
 
 ## iSCSI
 
@@ -173,6 +193,7 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 
+
 **优点**
 - 可连接性能超群，基于现有以太网络架构，可自然扩充到LAN、MAN、WAN，是远程数据传输的最佳方案。
 - 提供与FC同级别的高可用
@@ -188,15 +209,257 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 
-### iSCSI Target
 
-- portal，
-- iqn，
-- lun
+### iSCSI Target
+- 存储
+- Target 软件
+ - Lio
+ - Tgt
+
+
+### Addressing
+- Portal(ip:port)，如10.0.20.1:3260
+- IQN(iSCSI Qualified Name)，
+    - iqn.<yyyy-mm>.<domain name>.<Optional>
+- LUN(Logic Unit Number)，独立可访问的SCSI设备
+- CHAP，认证
+
+
+
+### iSCSI Initiator基本操作
+- 发现
+```
+[root@host18 ~]# iscsiadm -m discovery -t st -p 10.0.20.1:3260 
+10.0.10.1:3260,1 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+10.0.20.1:3260,1 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+10.0.30.1:3260,1 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+10.0.40.1:3260,1 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+10.0.50.1:3260,2 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+10.0.60.1:3260,2 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+172.16.22.70:3260,2 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+10.0.80.1:3260,2 iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d
+```
+
+
+
+- 登录
+```
+[root@host18 ~]# iscsiadm -m node -T iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d -p 10.0.20.1:3260 -l
+Logging in to [iface: default, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d, portal: 10.0.20.1,3260] (multiple)
+Login to [iface: default, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d, portal: 10.0.20.1,3260] successful.
+```
+
+
+
+- 查看
+```
+[root@host18 ~]# iscsiadm -m session -P 3
+iSCSI Transport Class version 2.0-870
+version 6.2.0.873-30
+Target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d (non-flash)
+	Current Portal: 10.0.40.1:3260,1
+	Persistent Portal: 10.0.40.1:3260,1
+		**********
+		Interface:
+		**********
+		Iface Name: default
+		Iface Transport: tcp
+		Iface Initiatorname: iqn.1994-05.com.redhat:a2c67b44fbb2
+		Iface IPaddress: 10.0.20.18
+		Iface HWaddress: <empty>
+		Iface Netdev: <empty>
+		SID: 2
+		iSCSI Connection State: LOGGED IN
+		iSCSI Session State: LOGGED_IN
+		Internal iscsid Session State: NO CHANGE
+		*********
+		Timeouts:
+		*********
+		Recovery Timeout: 5
+		Target Reset Timeout: 30
+		LUN Reset Timeout: 30
+		Abort Timeout: 15
+		*****
+		CHAP:
+		*****
+		username: <empty>
+		password: ********
+		username_in: <empty>
+		password_in: ********
+		************************
+		Negotiated iSCSI params:
+		************************
+		HeaderDigest: None
+		DataDigest: None
+		MaxRecvDataSegmentLength: 262144
+		MaxXmitDataSegmentLength: 262144
+		FirstBurstLength: 262144
+		MaxBurstLength: 524288
+		ImmediateData: No
+		InitialR2T: Yes
+		MaxOutstandingR2T: 1
+		************************
+		Attached SCSI devices:
+		************************
+		Host Number: 9	State: running
+		scsi9 Channel 00 Id 0 Lun: 0
+			Attached scsi disk sdo		State: running
+		scsi9 Channel 00 Id 0 Lun: 1
+			Attached scsi disk sdq		State: running
+		scsi9 Channel 00 Id 0 Lun: 10
+			Attached scsi disk sdak		State: running
+		scsi9 Channel 00 Id 0 Lun: 11
+			Attached scsi disk sdam		State: running
+		scsi9 Channel 00 Id 0 Lun: 12
+			Attached scsi disk sdao		State: running
+		scsi9 Channel 00 Id 0 Lun: 13
+			Attached scsi disk sdaq		State: running
+		scsi9 Channel 00 Id 0 Lun: 14
+			Attached scsi disk sdas		State: running
+		scsi9 Channel 00 Id 0 Lun: 15
+			Attached scsi disk sdau		State: running
+		scsi9 Channel 00 Id 0 Lun: 16
+			Attached scsi disk sdaw		State: running
+		scsi9 Channel 00 Id 0 Lun: 2
+			Attached scsi disk sds		State: running
+		scsi9 Channel 00 Id 0 Lun: 3
+			Attached scsi disk sdu		State: running
+		scsi9 Channel 00 Id 0 Lun: 4
+			Attached scsi disk sdw		State: running
+		scsi9 Channel 00 Id 0 Lun: 5
+			Attached scsi disk sdz		State: running
+		scsi9 Channel 00 Id 0 Lun: 6
+			Attached scsi disk sdab		State: running
+		scsi9 Channel 00 Id 0 Lun: 7
+			Attached scsi disk sdad		State: running
+		scsi9 Channel 00 Id 0 Lun: 8
+			Attached scsi disk sdaf		State: running
+		scsi9 Channel 00 Id 0 Lun: 9
+			Attached scsi disk sdah		State: running
+```
+
+
+
+- 退出
+```
+[root@host18 ~]# iscsiadm -m node -T iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d -p 10.0.20.1:3260 -u
+Logging out of session [sid: 1, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d, portal: 10.0.20.1,3260]
+Logout of [sid: 1, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d, portal: 10.0.20.1,3260] successful.
+```
 
 
 
 ## FCP
+
+
+# LVM
+逻辑卷管理（LVM，Logical Volume Manager）是Linux下的一种磁盘/分区管理器
+- PV(Physical Volume)物理卷，物理磁盘分区或相同功能的设备。
+- VG(Volume Group)卷组，由一个或多个PV组成
+- LV(Logic Volume)逻辑卷，建立在VG之上
+
+
+![lvm](images/lvm.png)
+
+
+
+## 逻辑卷操作
+- 创建
+```
+[root@host18 ~]# pvcreate  /dev/mapper/mpaths
+[root@host18 ~]# vgcreate b9d8935c-8ee6-4f07-b052-3286224edbf4 /dev/mapper/mpaths
+[root@host18 ~]# lvcreate -L 2G -n test1 b9d8935c-8ee6-4f07-b052-3286224edbf4
+  Logical volume "test1" created.
+```
+
+
+- 查看
+```
+[root@host18 ~]# pvs
+  PV                 VG                                   Fmt  Attr PSize   PFree  
+  /dev/mapper/mpaths b9d8935c-8ee6-4f07-b052-3286224edbf4 lvm2 a--  179.97g 179.47g
+  /dev/sda2          centos                               lvm2 a--  558.42g      0 
+```
+```
+[root@host18 ~]# vgs
+  VG                                   #PV #LV #SN Attr   VSize   VFree  
+  b9d8935c-8ee6-4f07-b052-3286224edbf4   1   1   0 wz--n- 179.97g 179.47g
+  centos                                 1   3   0 wz--n- 558.42g      0 
+```
+```
+[root@host18 ~]# lvs b9d8935c-8ee6-4f07-b052-3286224edbf4
+  LV         VG                                   Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  test1      b9d8935c-8ee6-4f07-b052-3286224edbf4 -wi-a-----   2.00g                                                    
+  vserver_ha b9d8935c-8ee6-4f07-b052-3286224edbf4 -wi-a----- 512.00m   
+```
+
+
+```
+[root@host18 ~]# lvdisplay b9d8935c-8ee6-4f07-b052-3286224edbf4/vserver_ha
+  --- Logical volume ---
+  LV Path                /dev/b9d8935c-8ee6-4f07-b052-3286224edbf4/vserver_ha
+  LV Name                vserver_ha
+  VG Name                b9d8935c-8ee6-4f07-b052-3286224edbf4
+  LV UUID                HKtt3P-SM09-WNYl-K7m2-KEHi-8ZEf-bcuzX4
+  LV Write Access        read/write
+  LV Creation host, time vs-test-91, 2016-05-18 10:24:02 +0800
+  LV Status              available
+  # open                 0
+  LV Size                512.00 MiB
+  Current LE             16
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:43
+```
+
+
+-快照
+```
+[root@host18 ~]# lvcreate -s -L 2G -n test1-snap b9d8935c-8ee6-4f07-b052-3286224edbf4/test1
+  Logical volume "test1-snap" created.
+[root@host18 ~]# lvdisplay b9d8935c-8ee6-4f07-b052-3286224edbf4/test1-snap
+  --- Logical volume ---
+  LV Path                /dev/b9d8935c-8ee6-4f07-b052-3286224edbf4/test1-snap
+  LV Name                test1-snap
+  VG Name                b9d8935c-8ee6-4f07-b052-3286224edbf4
+  LV UUID                tJHX3A-AqFb-Hh17-2UII-udW6-Ip1s-9Y68hj
+  LV Write Access        read/write
+  LV Creation host, time host18, 2016-05-19 10:54:03 +0800
+  LV snapshot status     active destination for test1
+  LV Status              available
+  # open                 0
+  LV Size                2.00 GiB
+  Current LE             64
+  COW-table size         2.00 GiB
+  COW-table LE           64
+  Allocated to snapshot  0.00%
+  Snapshot chunk size    4.00 KiB
+  Segments               1
+  Allocation             inherit
+  Read ahead sectors     auto
+  - currently set to     256
+  Block device           253:49
+```
+
+
+- 删除
+```
+[root@host18 ~]# lvremove b9d8935c-8ee6-4f07-b052-3286224edbf4/test1
+Do you really want to remove active logical volume test1? [y/n]: y
+  Logical volume "test1" successfully removed
+```
+
+
+- 激活
+- 扩展
+- 减小
+
+
+##精简格式
+瘦供给（Thin Provisioning），创建一个精简LVM池，从中分配超过池容量的卷。
+![lvm-thin](images/lvm-thin.png)
 
 
 
