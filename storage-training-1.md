@@ -4,6 +4,11 @@
 
 
 # 存储系统
+- 存储设备
+- 存储协议
+﻿
+
+
 ## 存储设备
 - 磁盘控制器
 - 硬盘
@@ -23,12 +28,10 @@
 
 
 
-![ide](images/ide.png)
+![ide](images/ide.png) ![sata](images/sata.png) ![sas](images/sas.png)
 
 
-![sata](images/sata.png)
 
-![sas](images/sas.png)
 
 
 
@@ -63,7 +66,12 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 
 
 
-# 存储连接技术
+# 存储协议
+- SCSI
+- iSCSI
+- FC
+
+
 
 ![storage-arch](images/storage-arch.png)
 
@@ -111,17 +119,20 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 
 
 
+### 核心设备
 - 光纤通道交换机（FC Switch）
 - 光纤通道卡（FC HBA），提供服务器或工作站连接到存储网络的接口
+- 存储服务器，
 
 
 
 - 优点
  - 传输速度快，传输距离远
  - 高级特性
-
 - 缺点
  - 孤立的存储设备
+
+
 
 - 应用场景
  - 基于文件和数据块的中高端存储解决方案
@@ -317,7 +328,7 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 性能好
 缺点：
 操作系统需要安装额外驱动。
-﻿
+
 
 
 # 多路径
