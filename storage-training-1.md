@@ -91,6 +91,7 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 
 
 
+
 ## DAS
 直连存储（Direct Attached Storage）
 - 优点
@@ -193,7 +194,6 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 
-
 ### 优点
 - 可连接性能超群，基于现有以太网络架构，可自然扩充到LAN、MAN、WAN，是远程数据传输的最佳方案。
 - 提供与FC同级别的高可用
@@ -208,12 +208,12 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 
-
 ### iSCSI Target
 - 存储
 - Target 软件
  - Lio
  - Tgt
+
 
 
 ### Addressing
@@ -223,6 +223,16 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 - LUN(Logic Unit Number)，独立可访问的SCSI设备
 - CHAP，认证
 
+
+
+### Target 管理
+- [存储管理界面](http://10.1.39.200/)
+![](./images/san-manage.png)
+
+
+
+- LUN映射
+![](./images/lun-mask.png)
 
 
 ### iSCSI Initiator基本操作
@@ -240,14 +250,12 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 ```
 
 
-
 - 登录
 ```
 [root@host18 ~]# iscsiadm -m node -T iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d -p 10.0.20.1:3260 -l
 Logging in to [iface: default, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d, portal: 10.0.20.1,3260] (multiple)
 Login to [iface: default, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d, portal: 10.0.20.1,3260] successful.
 ```
-
 
 
 - 查看
@@ -338,7 +346,6 @@ Target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d (non-flash)
 ```
 
 
-
 - 退出
 ```
 [root@host18 ~]# iscsiadm -m node -T iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d -p 10.0.20.1:3260 -u
@@ -351,13 +358,12 @@ Logout of [sid: 1, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d,
 ## FCP
 
 
+
 # LVM
 逻辑卷管理（LVM，Logical Volume Manager）是Linux下的一种磁盘/分区管理器
 - PV(Physical Volume)物理卷，物理磁盘分区或相同功能的设备。
 - VG(Volume Group)卷组，由一个或多个PV组成
 - LV(Logic Volume)逻辑卷，建立在VG之上
-
-
 ![lvm](images/lvm.png)
 
 
@@ -501,26 +507,15 @@ Do you really want to remove active logical volume test1? [y/n]: y
 具有一个或多个未映射到数据块的索引的文件称为稀疏分配或稀疏文件。稀疏文件将有一个与之相关的大小，但是它将不会有分配用于满足大小需求的所有数据块。
 ![sparse-file](images/sparse-file.jpg)
 
-
-
-
+﻿
 
 # RAID
 独立硬盘冗余阵列（RAID, Redundant Array of Independent Disks），旧称廉价磁盘冗余阵列（Redundant Array of Inexpensive Disks），简称磁盘阵列。其基本思想就是把多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、容量巨大的硬盘。根据选择的版本不同，RAID比单颗硬盘有以下一个或多个方面的好处：增强数据集成度，增强容错功能，增加处理量或容量。另外，磁盘阵列对于电脑来说，看起来就像一个单独的硬盘或逻辑存储单元。分为RAID-0，RAID-1，RAID-1E，RAID-5，RAID-6，RAID-7，RAID-10，RAID-50，RAID-60。
 
 
 
-```
-RAID档次	最少硬盘	最大容错	可用容量	读取性能	写入性能	安全性	目的	应用产业
-单一硬盘	(参考)	0	1	1	1	无	
+![raid-level](./images/raid-level.png)
 
-JBOD	1	0	n	1	1	无（同RAID 0）	增加容量	个人（暂时）存储备份
-0	2	0	n	n	n	一个硬盘异常，全部硬盘都会异常	追求最大容量、速度	视频剪接缓存用途
-1	2	n-1	1	1	1	最高，一个正常即可	追求最大安全性	个人、企业备份
-5	3	1	n-1	n-1	n-1	高	追求最大容量、最小预算	个人、企业备份
-6	4	2	n-2	n-2	n-2	安全性较RAID 5高	同RAID 5，但较安全	个人、企业备份
-10	4	n/2	n/2	n	n/2	安全性高	综合RAID 0/1优点，理论速度较快	大型数据库、服务器
-```
 
 
 
@@ -596,11 +591,10 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 
 
 # 多路径
-
 - 冗余，A/P模式，使用一半的路径，当前路径出现故障即切换到备选路径。
 - 提高性能，A/A模式，I/O以round-robin方式通过所有路径。
 
-﻿
+
 
 ![active-passive](images/active-passive.png "Active/Passive模式")
 
