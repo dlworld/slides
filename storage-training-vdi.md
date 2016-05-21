@@ -1,25 +1,23 @@
-# 存储产品知识
-- VDI 4.3
-- 云平台
-- VServer
+## 名词解释
+- Image，镜像，Glance管理的基本元素，业务层面称为模板
+- Volume，卷，Cinder管理的基本元素，业务层面称为虚拟磁盘
+- Image Cache，镜像缓存，特殊的卷，镜像在特定存储上的副本
+- 桌面，即虚拟机，包含计算、网络、存储资源
+![vdi-disk](./images/vdi-disk.png)
 
 
-
-# VDI 4.3
 ## 存储组件
 - auxo-storage
 - cinder
 - glance
 
 
-
-# auxo-storage
+## auxo-storage
 - 为前端提供存储添加/删除接口
 - 配置Cinder服务
 - 定期获取存储容量等信息
 - 创建HA卷
 - 存储状态管理
-
 
 
 ## 存储添加
@@ -33,10 +31,8 @@
  - FC，直接选择LUN
 
 
-
 ## 存储删除
 - 什么也没做
-
 
 
 ### 注意事项
@@ -46,13 +42,11 @@
 - 存储（Target）端配置修改后，本地服务器也需要重新登录或重启
 
 
-
 # 虚拟机存储
 - 本地存储
  - 服务器安装操作系统时规划，如果有多块硬盘，需配置RAID或使用逻辑卷管理。
   - 性能型，SSD硬盘挂载到/opt/ssd目录
   - 容量型，SATA/SAS硬盘挂载到/opt/sata目录
-
 
 
 - iSCSI存储
@@ -62,10 +56,8 @@
  - 选择LUN，初始化卷，创建VG或格式化
 
 
-
 - FC存储
  - 存储管理界面
-
 
 
 ## 公共存储管理
@@ -78,7 +70,6 @@
  - /var/lib/cinder/conversion，从镜像创建虚拟机磁盘时用到的临时目录
 
 
-
 ## 公共存储管理
 - 挂载步骤
  1. 先将分区挂载到/mnt/<fs-uuid>
@@ -89,16 +80,9 @@
  2. 目标子目录，保证原本地内容仍可访问
 
 
-
 # Cinder
 - Cinder架构
 ![cinder-arch](./images/cinder-arch.png "cinder arch")
-
-
-
-- Openstack Cinder
-![openstack-cinder](./images/openstack-cinder.png)
-
 
 
 # Cinder组件
@@ -109,13 +93,11 @@
 | openstack-cinder-volume | /ect/cinder/cinder.conf | /var/log/cinder/volume.log | 控制/计算节点|
 
 
-
 ## Cinder配置文件
 - 配置文件路径
  - /etc/cinder/cinder.conf
 - 全局配置
 - 存储配置
-
 
 
 ### 全局配置
@@ -135,7 +117,6 @@ enable_force_upload = True
 - 数据库配置
 
 
-
 ### 本地存储配置
 ```
 [storage-2684de03-f940-4519-8f41-daeb9616b0ca]
@@ -150,7 +131,6 @@ image_format = qcow2
 - mount_point，本地存储挂载的目录。目前仅ssd和sata两个。
 - storage-存储ID，存储后端名称，对应cinder的volume-type
 - image_base_path，该存储的镜像缓存路径，如果为空，表示该存储自身。
-
 
 
 ### 共享存储配置
@@ -180,7 +160,6 @@ image_format = qcow2
     - fcsan，FC存储
 
 
-
 ### Cinder常用命令
 - cinder help [sub-command] 查看命令帮助
 - cinder create 创建卷
@@ -197,12 +176,10 @@ image_format = qcow2
 - cinder delete <volume-id> 删除卷
 
 
-
 # 镜像
 >Glance是客户端-服务器架构，为用户提供REST API接口，内部分层完成不同操作。所有的文件操作用glance_store库完成，负责与外部存储后端和本地文件系统交互，提供统一接口。
 
 ![glance-arch](./images/glance-arch.png)
-
 
 
 ### Glance组件
@@ -212,28 +189,9 @@ image_format = qcow2
 | openstack-glance-registry | /ect/glance/glance-registry.conf | /var/log/cinder/registry.log | 控制节点|
 
 
-
 ### 目录
 用户上传的镜像存放目录：
  - /opt/glance/images 
-
-
-### glance常用命令
-- glance help [sub-command] 查看命令帮助
-- glance image-list 列出所有镜像
-- glance image-show <image-id> 查看镜像详细信息
-- glance image-delete <image-id> 删除镜像
-- glance image-create 创建镜像
-  -  --container-format bare 必加
-  -  [--disk-format <DISK_FORMAT>]  镜像格式，raw/qcow2/iso
-  -  [--file <FILE>] 镜像文件
-  -  [--progress]    显示进度
-  -  [--property <key=value>] 可选，其它属性
-  - [--name <NAME>] 镜像名称
-
-
-## 镜像操作流程
-
 
 
 ### 上传镜像
@@ -255,11 +213,8 @@ image_format = qcow2
 4. 重置模板虚拟机。镜像更新完成后，需要重置模板虚拟机磁盘，清除之前的增量内容。
 
 
-
 ### 通过ISO创建镜像
 ![image-ops-iso](./images/vdi-image-ops-iso.png)
-
-
 
 
 如果镜像模板通过ISO重新生成，过程略有不同。
@@ -267,3 +222,17 @@ image_format = qcow2
 2. 模板创建完成，保存镜像时，仅将虚拟磁盘的路径加入镜像I1，而没有真正上传。原虚拟磁盘D1同时作为该存储S1的缓存，上面再基于I1创建磁盘时，都是以D1作为Base。其它存储，如S2也基于I1创建磁盘，过程与之前的步骤一致。
 
 
+### glance常用命令
+- glance help [sub-command] 查看命令帮助
+- glance image-list 列出所有镜像
+- glance image-show <image-id> 查看镜像详细信息
+- glance image-delete <image-id> 删除镜像
+- glance image-create 创建镜像
+  -  --container-format bare 必加
+  -  [--disk-format <DISK_FORMAT>]  镜像格式，raw/qcow2/iso
+  -  [--file <FILE>] 镜像文件
+  -  [--progress]    显示进度
+  -  [--property <key=value>] 可选，其它属性
+  - [--name <NAME>] 镜像名称
+
+﻿
