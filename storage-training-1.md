@@ -1,8 +1,3 @@
-
-# 基本概念
-
-
-
 # 存储系统
 - 存储设备
 - 存储分类
@@ -17,20 +12,55 @@
 - RAID
 
 
-
 ### 硬盘控制器
-系统通过磁盘控制器操作磁盘。
-硬盘接口类型：
+硬盘控制器即硬盘控制单元，是把计算机指令转化为硬盘动作的接口设备。硬盘控制器类型很多，但它的基本组成和工作原理大体上是相同的，它主要由与计算机系统总线相连的控制逻辑电路，微处理器，完成读出数据分离和写入数据补偿的读写数据解码和编码电路，数据检错和纠错电路，根据计算机发来的命令对数据传递，串并转换以及格式化等进行控制的逻辑电路，存放硬盘基本输入输出程序的只读存储器和用以数据交换的缓冲区等部分组成。
+- 接收并解释计算机来的命令，向硬盘发出各种控制信号
+- 检测硬盘状态，按照规定的硬盘数据格式，把数据写入硬盘和从硬盘读出数据
+
+
+### 硬盘构造
+![disk](images/disk.jpg)
+
+
+### SSD
+固态硬盘(SSD, Solid State Disk)是一种以内存作为永久存储的设备。
+![ssd](images/ssd.jpg)
+
+
+### SSD主要部件
+1. 控制芯片
+2. NAND芯片，
+3. 电容，掉电保护，保证数据安全性
+4. DRAM，缓存元数据
+5. 对外接口，SATA/mSATA/PCI-E
+6. NOR Flash，引导SSD
+
+
+### SSD性能影响因素：
+1. 主控，
+2. NAND Flash，
+  | Flash | Cell存储bit | 
+    - SLC(Single Level Cell)，每个cell存储一个bit，寿命长性能好，军工级产品
+    - MLC()，每个cell存储两个bit，容量大，一般用于企业级/消费级产品
+    - TLC，每个cell存储三个bit，
+3. 缓存
+
+
+### SSD问题
+- 掉速，速度随写入次数而降低
+
+
+### 硬盘接口类型：
 - IDE(Intergrated Device Electronic)，并口磁盘，ATA硬盘
 - SATA(Serial ATA)，串行硬盘，在安装、传输速率、功耗、抗干扰方面有优势。
 - SCSI(Small Computer System Interface)，相对于ATA支持更多接口数量，并行处理能力强，CPU占用率低。
 - SAS(Serial Attached SCSI)，性能更高，向下兼容SATA。
 - 光纤通道，优越的性能、稳定的传输。
-
+- PCI-E
+- mSATA
 
 
 ![ide](images/ide.png) ![sata](images/sata.png) ![sas](images/sas.png)
-
 
 
 
@@ -44,12 +74,10 @@
 | SATA III | 600MB/s |
 
 
-
 工作模式：
 - IDE模式，IDE兼容模式，SATA硬盘也支持。
 - AHCI模式，高级控制器接口，支持热插拔、本地命令队列等高级功能。
 - RAID模式，把多块硬盘组成一个硬盘组。
-
 
 
 ### HBA控制器
@@ -58,18 +86,15 @@ HBA的作用就是实现内部通道协议PCI和FC协议之间的转换。
 ![hba](images/hba.jpg)
 
 
-
 ### RAID控制器
 RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控制器采用PCI或PCIe卡的形式，这是为特定接口（比如SATA或SCSI）专门设计的。
 ![raid](images/raid.jpg)
-
 
 
 ## 存储类型
 - 文件存储，文件访问接口
 - 块存储，磁盘
 - 对象存储，键值存储，接口GET、PUT、DELETE和其它扩展
-
 
 
 存储方式	| 技术实现	| 优势	| 劣势 |	代表作
@@ -79,16 +104,13 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 对象存储	| 以灵活可定制的对象为存储单元，元数据服务器提供快速并发寻址	| 读写速度较快的同时支持网络共享，对象灵活定义|	管理软件的购买、使用和运维成本高	| Swift
 
 
-
 ## 存储协议
 - SCSI
 - iSCSI
 - FC
 
 
-
 ![storage-arch](images/storage-arch.png)
-
 
 
 
@@ -104,8 +126,6 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
  - 缺乏较好的高科用性
 - 适用场景
  - 小型机构存储解决方案
-
-
 
 
 ## NAS
@@ -132,12 +152,10 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 
 
 
-
 ### 核心设备
 - 光纤通道交换机（FC Switch）
 - 光纤通道卡（FC HBA），提供服务器或工作站连接到存储网络的接口
 - 存储服务器，
-
 
 
 - 优点
@@ -145,7 +163,6 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
  - 高级特性
 - 缺点
  - 孤立的存储设备
-
 
 
 - 应用场景
@@ -159,16 +176,13 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
  - 分级存储（HSM）
 
 
-
 ## SAN与NAS区别
 NAS：提供文件服务
 SAN：提供块设备服务
 ![nas-san](images/nas-san.png)
 
 
-
 ## iSCSI
-
 
 
 ### SCSI系统
@@ -179,14 +193,12 @@ SCSI是一套完整的数据传输协议，其主要功能是在主机和存储�
 - SCSI Target，等待Initiator的命令，提供传输数据。通常向Initiator提供一个或多个LUNs。
 
 
-
 ### iSCSI协议
 iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 - iSCSI 协议经由TCP/IP协议栈（在IP之上的第四层< 传输>）传送本地SCSI命令及数据。
 - 通过iSCSI协议，标准的SCSI命令和数据将被封装成一个以iSCSI头在先的连续字节串，该字节串被送到TCP/IP层，并被分解成适合网络传输的数据组后，交给主机和适用与iSCSI协议的存储设备
 - 如果发出一个读数据的请求，则从物理磁盘中检索出数据，将其重新封装成iSCSI字节串后送到提出请求的主机
 - 整个过称对用户和文件系统是透明的
-
 
 
 ![iscsi](images/iscsi.png)
@@ -203,7 +215,6 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 - 超远传输距离
 
 
-
 ![iscsi-arch](images/iscsi-arch.png)
 
 
@@ -215,7 +226,6 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
  - Tgt
 
 
-
 ### Addressing
 - Portal(ip:port)，如10.0.20.1:3260
 - IQN(iSCSI Qualified Name)，
@@ -224,11 +234,9 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 - CHAP，认证
 
 
-
 ### Target 管理
 - [存储管理界面](http://10.1.39.200/)
 ![](./images/san-manage.png)
-
 
 
 - LUN映射
@@ -357,6 +365,16 @@ Logout of [sid: 1, target: iqn.2012-07.com.Sugon:alias.tgt0000.200000015555ee0d,
 
 ## FCP
 
+FC(Fibre Channel)是一种高速网络互联技术（2、4、8、16Gbps），主要用于连接计算机存储设备。
+FCP(Fibre Channel Protocol)光纤通道协议是一种类似于TCP的传输协议，通过光纤通道上传输SCSI命令。
+
+
+## 单模与多模
+- 单模，芯径9-10微米，最大传输10km，成本高
+![](./images/single-mode.png)
+
+- 多模，芯径50-62.5微米，
+![](./images/multi-mode.png)
 
 
 # LVM
@@ -466,7 +484,7 @@ Do you really want to remove active logical volume test1? [y/n]: y
 
 ##精简格式
 瘦供给（Thin Provisioning），创建一个精简LVM池，从中分配超过池容量的卷。
-![lvm-thin](images/lvm-thin.png)
+![lvm-thin](images/lvm-thin.jpg)
 
 
 
@@ -483,40 +501,101 @@ Do you really want to remove active logical volume test1? [y/n]: y
 - gpt
 
 
-
-## 本地文件系统
-- EXT
-- XFS
-- NTFS
-
-
-
-## 网络文件系统
-- NFS
-- CIFS
+## 文件系统
+- 本地文件系统
+- 网络文件系统
+- 集群文件系统
+- 分布式文件系统
+注：由于理解角度不同，集群与分布式文件系统定义不同。
 
 
+### 本地文件系统
+单机文件系统，用于操作系统和应用程序的本地存储。
+- 典型代表： EXT、XFS、NTFS、FAT，
+- 缺点：数据无法在服务器之间共享
+![](./images/SingleOS.gif)
 
-## 集群文件系统
-- GlusterFS
-- GFS
 
+### 网络文件系统
+基于现有以太网架构，实现不同服务器之间传统文件系统数据共享。
+- 典型代表： NFS、CIFS，
+- 缺点：两台服务器不能同时访问修改，性能有限
+![](./images/NAS.gif)
+
+
+### 集群文件系统
+在共享存储基础上，通过集群锁，实现不同服务器能够共用一个传统文件系统。
+- 典型代表：GFS（Redhat）、GFS2（Redhat）、OCFS（Oracle）
+- 缺点：性能一般，扩展性很有限（小于16台服务器）
+![](./images/CFS.gif)
+
+
+### 分布式文件系统
+在传统文件系统上，通过额外模块实现数据跨服务器分布，并且自身集成raid保护功能，可以保证多台服务器同时访问、修改同一个文件系统。性能优越，扩展性很好，成本低廉。
+-典型代表：lustre（Oracle）、HDFS（ASF）、gluster（Redhat）、Ceph（Redhat）
+- 缺点：适用场景单一，部分类型存在单点故障风险。
+- 主要分两大类型：一种是元数据集中管理模型；另一种是元数据分散管理模型
+
+
+### HDFS
+HDFS是元数据集中管理典型代表。实际数据分布存放在数据服务器上，元数据服务器负责IO请求调配，空间分配；非常适用于大文件存储。
+![](./images/hdfsarchitecture.gif)
+
+
+### GlusterFS
+gluster是元数据分散管理模型典型代表，元数据被分散放置到所有服务器上，不存在元数据单点故障。非常适用于小文件存储。
+![](./images/gluster.png)
 
 
 ## 稀疏文件
 具有一个或多个未映射到数据块的索引的文件称为稀疏分配或稀疏文件。稀疏文件将有一个与之相关的大小，但是它将不会有分配用于满足大小需求的所有数据块。
 ![sparse-file](images/sparse-file.jpg)
 
-﻿
+
 
 # RAID
 独立硬盘冗余阵列（RAID, Redundant Array of Independent Disks），旧称廉价磁盘冗余阵列（Redundant Array of Inexpensive Disks），简称磁盘阵列。其基本思想就是把多个相对便宜的硬盘组合起来，成为一个硬盘阵列组，使性能达到甚至超过一个价格昂贵、容量巨大的硬盘。根据选择的版本不同，RAID比单颗硬盘有以下一个或多个方面的好处：增强数据集成度，增强容错功能，增加处理量或容量。另外，磁盘阵列对于电脑来说，看起来就像一个单独的硬盘或逻辑存储单元。分为RAID-0，RAID-1，RAID-1E，RAID-5，RAID-6，RAID-7，RAID-10，RAID-50，RAID-60。
 
 
-
 ![raid-level](./images/raid-level.png)
 
 
+## 总结
+- RAID-1提供比较好的读写性能，
+- RAID-5读性能不错，但是写入性能就不如RAID-1，
+- RAID-6保护级别更高，但写性能相对更加差，
+- RAID10是提供最好的性能和数据保护，不过成本最高
+
+
+## RAID-5 写惩罚
+写惩罚（Write Penalty）：条带上任意磁盘上的数据改变，都会重新计算校验位，从而影响写性能。
+1. 读取原数据0110，然后与新的数据1111做XOR操作： 0110 XOR 1111 = 1001
+2. 读取原有的校验位0010
+3. 用第一步算出的数值与原校验位再做一次XOR操作： 0010 XOR 1001 = 1011
+4. 然后将1111新数据写入到数据磁盘，将第三步计算出来的新的校验位写入校验盘。
+![raid5](./images/RAID5_Penalty.png)
+
+
+## 不同RAID级别的写惩罚
+- RAID-0：直接的条带，数据每次写入对应物理磁盘上的一次写入
+- RAID-1和10：RAID-1 和RAID-10的写惩罚很简单理解，因为数据的镜像存在的，所以一次写入会有两次。
+- RAID-5：RAID-5由于要计算校验位的机制存在，需要读数据、读校验位、写数据、写校验位四个步骤，所以RAID-5的写惩罚值是4。
+- RAID-6：RAID-6由于有两个校验位的存在，与RAID-5相比，需要读取两次校验位和写入两次校验位，所以RAID-6的写惩罚值是6。
+RAID Level | Write Penalty
+0 | 1
+1 | 2
+5 | 4
+6 | 6
+10 | 2
+
+
+## 计算IOPS
+
+>物理磁盘总的IOPS = 物理磁盘的IOPS × 磁盘数目 
+>可用的IOPS = （物理磁盘总的IOPS × 写百分比 ÷ RAID写惩罚） + （物理磁盘总的IOPS × 读百分比）
+
+     假设组成RAID-5的物理磁盘总共可以提供500 IOPS，使用该存储的应用程序读写比例是50%/50%，那么对于前端主机而言，实际可用的IOPS是：
+（500 ×50% ÷ 4）+ ( 500 * 50%) = 312.5 IOPS
 
 
 # 虚拟磁盘
@@ -534,7 +613,6 @@ Do you really want to remove active logical volume test1? [y/n]: y
 占磁盘空间，不支持快照。
 
 
-
 ### QCOW
 它也是可以用一个文件的形式来表示一块固定大小的块设备磁盘。与普通的 raw 格式的镜像相比，有以下特性：
 - 更小的空间占用，即使文件系统不支持空洞(holes)；
@@ -544,15 +622,12 @@ Do you really want to remove active logical volume test1? [y/n]: y
 - 可以选择 AES 加密
 
 
-
 ### VMDK
 VMWare
 
 
-
 ### VHD
 VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
-
 
 
 ## 缓存格式
@@ -564,48 +639,43 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 | writeback |虚拟机I/O缓存在主机 | | 
 
 
-
 ## 虚拟磁盘控制器
 - IDE
 - Virtio
 
 
-
 ### IDE
 完全软件模拟的传统PC存储控制器。
-优点：
+- 优点：
 无需安装额外驱动，兼容性好
-缺点：
+- 缺点：
 性能差
-
 
 
 ### Virtio
 半虚拟化的磁盘控制器，让虚拟机的操作系统与内核的虚拟化层直接通信。
 
 优点：
-性能好
+- 性能好
 缺点：
-操作系统需要安装额外驱动。
+- 操作系统需要安装额外驱动。
 
 
 
 # 多路径
+作用：
 - 冗余，A/P模式，使用一半的路径，当前路径出现故障即切换到备选路径。
 - 提高性能，A/A模式，I/O以round-robin方式通过所有路径。
 
 
-
-![active-passive](images/active-passive.png "Active/Passive模式")
-
-
-
-
-故障点：
+## SAN故障点：
 - HBA
 - FC线
 - SAN交换机
 - 阵列控制器端口
+
+
+![active-passive](images/active-passive.png "Active/Passive模式")
 
 
 
@@ -613,9 +683,61 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 
 
 
+## 多路径软件
+- multipathd，基于device-mapper
+- UltraPath，
+
+
+## multipath常用命令
+加载多路径模块
+```
+[root@host18 ~]# modprobe dm_multipath
+```
+
+配置多路径
+```
+[root@host18 ~]# cp /usr/share/doc/device-mapper-multipath-0.4.9/multipath.conf /etc/multipath.conf
+```
+
+
+启动多路径服务
+```
+[root@host18 ~]# systemctl start multipathd
+```
+
+
+格式化多路径
+```
+[root@host18 ~]# multipath -v2
+```
+
+
+查看多路径信息
+```
+[root@host18 ~]# multipath -ll
+mpathr (222ed0001554cc6c9) dm-14 Sugon   ,DS600 G10       
+size=180G features='0' hwhandler='0' wp=rw
+`-+- policy='round-robin 0' prio=1 status=active
+  |- 9:0:0:8   sdaf 65:240 active ready running
+  |- 10:0:0:8  sdan 66:112 active ready running
+  `- 11:0:0:8  sdk  8:160  active ready running
+mpathe (22204000155d0f409) dm-12 Sugon   ,DS600 G10       
+size=150G features='0' hwhandler='0' wp=rw
+`-+- policy='round-robin 0' prio=1 status=active
+  |- 9:0:0:10  sdak 66:64  active ready running
+  |- 10:0:0:10 sdar 66:176 active ready running
+  `- 11:0:0:10 sdm  8:192  active ready running
+```
+
+
+清除多路径
+```
+[root@host18 ~]# multipath -F
+```
+
+
 
 # 分布式存储
-
 
 
 ## 分布式存储系统特点：
@@ -624,7 +746,6 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 动运维。
 - 高性能 。无论是针对整个集群还是单台服务器，都要求分布式存储系统具备高性能。
 - 易用 。分布式存储系统需要能够提供易用的对外接口，另外，也要求具备完善的监控、运维工具，并能够方便地与其他系统集成
-
 
 
 ## 分布式存储系统主要技术：
@@ -638,10 +759,17 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 - 压缩/解压缩 ：如何根据数据的特点设计合理的压缩 / 解压缩算法?如何平衡压缩算法节省的存储空间和消耗的 CPU 计算资源?
 
 
-
 ## 分布式存储分类：
 - 分布式文件系。存储大量的图片、照片、视频等非结构化数据，这类数据以对象的形式组织，对象之间没有关联，这样的数据一般称为  Blob（Binary Large Object，二进制大对象）数据。如GFS。
 - 分布式键值系统。存储关系简单的半结构化数据（如html文档），它只提供基于主键的 CRUD(Create/Read/Update/Delete)功能，即根据主键创建、读取、更新或者删除一条键值记录。如Memcache。
 - 分布式表格系统。存储关系较为复杂的半结构化数据，与分布式键值系统相比分布式表格系统不仅仅支持简单的 CRUD 操作，而且支持扫描某个主键范围。分布式表格系统以表格为单位组织数据，每个表格包括很多行，通过主键标识一行，支持根据主键的 CRUD 功能以及范围查找功能。如Google Bigtable。
 - 分布式数据库。一般是从单机关系数据库扩展而来，用于存储结构化数据。分布式数据库采用二维表格组织数据，提供 SQL 关系查询语言，支持多表关联，嵌套子查询等复杂操作，并提供数据库事务以及并发控制。如MySQL Sharding。
+
+
+### Ceph
+基于RADOS的存储集群（Storage Cluster）具有无限的扩展性，集群内包含两类守护进程：
+- 监控器（Monitor），维护集群主映射表（cluster map），客户端（client）从其获取集群映射的备份。
+- 对象存储设备（OSD），检查自己和其它osd的状态，并报告给monitor。
+![](./images/ceph-arch.png)
+
 
