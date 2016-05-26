@@ -3,7 +3,6 @@
 - 创建/删除
 
 
-
 - cinder service-list 查看存储服务状态
 ```
 [root@console65 ~]# cinder service-list
@@ -39,7 +38,7 @@
 | 8dd996fe-c6e1-4f77-bf37-35d18a80c033 | storage-009af686-9436-4a3b-8c48-6eac8f3483f8 |      -      |    True   |
 +--------------------------------------+----------------------------------------------+-------------+-----------+
 ```
-
+﻿
 
 - cinder create 创建卷
   -  [--source-volid <source-volid>]， 从另一个卷拷贝

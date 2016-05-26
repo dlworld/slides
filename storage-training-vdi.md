@@ -192,12 +192,12 @@ image_format = qcow2
 ### 目录
 用户上传的镜像存放目录：
  - /opt/glance/images 
+ - /opt/glance/images/remotefs
+
 
 
 ### 上传镜像
 ![image-ops](./images/vdi-image-ops.png)
-
-
 
 
 1. 用户上传镜像文件。用户将已有的镜像文件上传到镜像服务器，默认保存到/opt/glance/images目录，生成的镜像文件名域镜像ID一致。
@@ -216,7 +216,7 @@ image_format = qcow2
 ### 通过ISO创建镜像
 ![image-ops-iso](./images/vdi-image-ops-iso.png)
 
-
+﻿
 如果镜像模板通过ISO重新生成，过程略有不同。
 1. 模板虚拟机使用的磁盘D1是独立创建，而不是基于某个镜像，所以没有Base。
 2. 模板创建完成，保存镜像时，仅将虚拟磁盘的路径加入镜像I1，而没有真正上传。原虚拟磁盘D1同时作为该存储S1的缓存，上面再基于I1创建磁盘时，都是以D1作为Base。其它存储，如S2也基于I1创建磁盘，过程与之前的步骤一致。
@@ -235,4 +235,4 @@ image_format = qcow2
   -  [--property <key=value>] 可选，其它属性
   - [--name <NAME>] 镜像名称
 
-﻿
+
