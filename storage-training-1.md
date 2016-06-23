@@ -24,7 +24,7 @@
 
 ### SSD
 固态硬盘(SSD, Solid State Disk)是一种以内存作为永久存储的设备。
-![ssd](images/ssd.jpg)
+![ssd](images/ssd.png)
 
 
 ### SSD主要部件
@@ -39,10 +39,9 @@
 ### SSD性能影响因素：
 1. 主控，
 2. NAND Flash，
-  | Flash | Cell存储bit | 
-    - SLC(Single Level Cell)，每个cell存储一个bit，寿命长性能好，军工级产品
-    - MLC()，每个cell存储两个bit，容量大，一般用于企业级/消费级产品
-    - TLC，每个cell存储三个bit，
+    - SLC(Single-Level Cell)，每个cell存储一个bit，10万次擦写，寿命长性能好，军工级/企业级产品
+    - MLC(Multi-Level Cell)，每个cell存储两个bit，3000-1万次擦写，容量大，一般用于企业级/消费级产品，主流
+    - TLC(Trinary-Level Cell)，每个cell存储三个bit，500次擦写，曾经的移动U盘，发展较快
 3. 缓存
 
 
@@ -56,12 +55,11 @@
 - SCSI(Small Computer System Interface)，相对于ATA支持更多接口数量，并行处理能力强，CPU占用率低。
 - SAS(Serial Attached SCSI)，性能更高，向下兼容SATA。
 - 光纤通道，优越的性能、稳定的传输。
-- PCI-E
 - mSATA
+- NVMe(Non-Volatile Memory Express)，
 
 
 ![ide](images/ide.png) ![sata](images/sata.png) ![sas](images/sas.png)
-
 
 
 
@@ -83,6 +81,7 @@
 ### HBA控制器
 主机总线适配器(Host Bus Adapter,HBA)是一个在服务器和存储装置间提供输入/输出(I/O)处理和物理连接的电路板和/或集成电路适配器。
 HBA的作用就是实现内部通道协议PCI和FC协议之间的转换。
+![hba](images/hba.png)
 ![hba](images/hba.jpg)
 
 
@@ -110,8 +109,8 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 - FC
 
 
-![storage-arch](images/storage-arch.png)
 
+![storage-arch](images/storage-arch.png)
 
 
 ## DAS
@@ -145,11 +144,9 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
  - 文件存储解决方案
 
 
-
 ## SAN
 存储区域网络（Storage Area Network），独立于LAN的服务器端存储专用网络。
 ![san](images/san.png)
-
 
 
 ### 核心设备
@@ -180,6 +177,7 @@ RAID控制卡是一种磁盘阵列卡，它的核心就是RAID控制芯片。控
 NAS：提供文件服务
 SAN：提供块设备服务
 ![nas-san](images/nas-san.png)
+
 
 
 ## iSCSI
@@ -241,6 +239,7 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 - LUN映射
 ![](./images/lun-mask.png)
+
 
 
 ### iSCSI Initiator基本操作
@@ -385,6 +384,20 @@ FCP(Fibre Channel Protocol)光纤通道协议是一种类似于TCP的传输协�
 ![lvm](images/lvm.png)
 
 
+## 快照
+写时拷贝技术：创建创建快照仅拷贝元数据信息，实际数据在修改时再同步。
+
+
+
+##精简格式
+瘦供给（Thin Provisioning），创建一个精简LVM池，从中分配超过池容量的卷。
+![lvm-thin](images/lvm-thin.jpg)
+
+
+## CLVM
+集群逻辑卷管理，多台机器同时使用逻辑卷。
+![lvm-thin](images/clvmoverview.png)
+
 
 ## 逻辑卷操作
 - 创建
@@ -476,29 +489,20 @@ Do you really want to remove active logical volume test1? [y/n]: y
 
 
 
-- 激活
-- 扩展
-- 减小
-
-
-
-##精简格式
-瘦供给（Thin Provisioning），创建一个精简LVM池，从中分配超过池容量的卷。
-![lvm-thin](images/lvm-thin.jpg)
-
-
-
 # 文件系统
 
 文件是已建立索引的块的序列。块从索引节点映射到它们所代表的文件的逻辑偏移量。
 
+
+- 顺序存储
 ![filesystem](images/filesystem.png)
 
 
 
 ## 分区
-- mbr
-- gpt
+- MBR(Master Boot Record)，
+- GPT(GUID partition table)，
+
 
 
 ## 文件系统
@@ -521,7 +525,7 @@ Do you really want to remove active logical volume test1? [y/n]: y
 - 典型代表： NFS、CIFS，
 - 缺点：两台服务器不能同时访问修改，性能有限
 ![](./images/NAS.gif)
-
+﻿
 
 ### 集群文件系统
 在共享存储基础上，通过集群锁，实现不同服务器能够共用一个传统文件系统。
@@ -678,7 +682,6 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 ![active-passive](images/active-passive.png "Active/Passive模式")
 
 
-
 ![active-active](images/active-active.png "Active/Active模式")
 
 
@@ -689,18 +692,17 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 
 
 ## multipath常用命令
-加载多路径模块
+- 加载多路径模块
 ```
 [root@host18 ~]# modprobe dm_multipath
 ```
 
-配置多路径
+- 配置多路径
 ```
 [root@host18 ~]# cp /usr/share/doc/device-mapper-multipath-0.4.9/multipath.conf /etc/multipath.conf
 ```
 
-
-启动多路径服务
+- 启动多路径服务
 ```
 [root@host18 ~]# systemctl start multipathd
 ```
@@ -710,7 +712,6 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 ```
 [root@host18 ~]# multipath -v2
 ```
-
 
 查看多路径信息
 ```
@@ -728,7 +729,6 @@ size=150G features='0' hwhandler='0' wp=rw
   |- 10:0:0:10 sdar 66:176 active ready running
   `- 11:0:0:10 sdm  8:192  active ready running
 ```
-
 
 清除多路径
 ```
