@@ -203,7 +203,6 @@ iSCSI是IETF提出的经TCP/IP/以太网传送SCSI指令的协议。
 
 
 
-
 ### 优点
 - 可连接性能超群，基于现有以太网络架构，可自然扩充到LAN、MAN、WAN，是远程数据传输的最佳方案。
 - 提供与FC同级别的高可用
@@ -376,6 +375,7 @@ FCP(Fibre Channel Protocol)光纤通道协议是一种类似于TCP的传输协�
 ![](./images/multi-mode.png)
 
 
+
 # LVM
 逻辑卷管理（LVM，Logical Volume Manager）是Linux下的一种磁盘/分区管理器
 - PV(Physical Volume)物理卷，物理磁盘分区或相同功能的设备。
@@ -498,12 +498,16 @@ Do you really want to remove active logical volume test1? [y/n]: y
 ![filesystem](images/filesystem.png)
 
 
-
 ## 分区
 - MBR(Master Boot Record)，
+  - 4个主分区或3个主分区+1个扩展分区
+  - Legacy BIOS
+  - 2TB限制
 - GPT(GUID partition table)，
-
-
+  - UEFI BIOS
+  - 任意分区数
+  - 最大寻址2 ZB
+﻿
 
 ## 文件系统
 - 本地文件系统
@@ -525,7 +529,7 @@ Do you really want to remove active logical volume test1? [y/n]: y
 - 典型代表： NFS、CIFS，
 - 缺点：两台服务器不能同时访问修改，性能有限
 ![](./images/NAS.gif)
-﻿
+
 
 ### 集群文件系统
 在共享存储基础上，通过集群锁，实现不同服务器能够共用一个传统文件系统。
