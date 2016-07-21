@@ -488,6 +488,86 @@ Do you really want to remove active logical volume test1? [y/n]: y
 ```
 
 
+- 激活
+```
+[root@host18 ~]# vgchange -ay
+[root@host18 ~]# vgchange -ay  b9d8935c-8ee6-4f07-b052-3286224edbf4
+  2 logical volume(s) in volume group "b9d8935c-8ee6-4f07-b052-3286224edbf4" now active
+[root@host18 ~]# lvchange -ay b9d8935c-8ee6-4f07-b052-3286224edbf4/test1
+```
+
+
+
+# 多路径
+作用：
+- 冗余容错，A/P模式，使用一半的路径，当前路径出现故障即切换到备选路径。
+- 提高性能，A/A模式，I/O以round-robin方式通过所有路径。
+
+
+## SAN故障点：
+- HBA
+- FC线
+- SAN交换机
+- 阵列控制器端口
+
+
+![active-passive](images/active-passive.png "Active/Passive模式")
+
+
+![active-active](images/active-active.png "Active/Active模式")
+
+
+
+## 多路径软件
+- multipathd，Linux系统通用多路径软件，基于device-mapper，块设备之上
+- UltraPath，华为存储多路径软件，块设备层
+
+
+## multipath常用命令
+- 加载多路径模块
+```
+[root@host18 ~]# modprobe dm_multipath
+```
+
+- 配置多路径
+```
+[root@host18 ~]# cp /usr/share/doc/device-mapper-multipath-0.4.9/multipath.conf /etc/multipath.conf
+```
+
+- 启动多路径服务
+```
+[root@host18 ~]# systemctl start multipathd
+```
+
+
+格式化多路径
+```
+[root@host18 ~]# multipath -v2
+```
+
+查看多路径信息
+```
+[root@host18 ~]# multipath -ll
+mpathr (222ed0001554cc6c9) dm-14 Sugon   ,DS600 G10       
+size=180G features='0' hwhandler='0' wp=rw
+`-+- policy='round-robin 0' prio=1 status=active
+  |- 9:0:0:8   sdaf 65:240 active ready running
+  |- 10:0:0:8  sdan 66:112 active ready running
+  `- 11:0:0:8  sdk  8:160  active ready running
+mpathe (22204000155d0f409) dm-12 Sugon   ,DS600 G10       
+size=150G features='0' hwhandler='0' wp=rw
+`-+- policy='round-robin 0' prio=1 status=active
+  |- 9:0:0:10  sdak 66:64  active ready running
+  |- 10:0:0:10 sdar 66:176 active ready running
+  `- 11:0:0:10 sdm  8:192  active ready running
+```
+
+清除多路径
+```
+[root@host18 ~]# multipath -F
+```
+
+
 
 # 文件系统
 
@@ -507,7 +587,7 @@ Do you really want to remove active logical volume test1? [y/n]: y
   - UEFI BIOS
   - 任意分区数
   - 最大寻址2 ZB
-﻿
+
 
 ## 文件系统
 - 本地文件系统
@@ -575,36 +655,6 @@ gluster是元数据分散管理模型典型代表，元数据被分散放置到�
 - RAID10是提供最好的性能和数据保护，不过成本最高
 
 
-## RAID-5 写惩罚
-写惩罚（Write Penalty）：条带上任意磁盘上的数据改变，都会重新计算校验位，从而影响写性能。
-1. 读取原数据0110，然后与新的数据1111做XOR操作： 0110 XOR 1111 = 1001
-2. 读取原有的校验位0010
-3. 用第一步算出的数值与原校验位再做一次XOR操作： 0010 XOR 1001 = 1011
-4. 然后将1111新数据写入到数据磁盘，将第三步计算出来的新的校验位写入校验盘。
-![raid5](./images/RAID5_Penalty.png)
-
-
-## 不同RAID级别的写惩罚
-- RAID-0：直接的条带，数据每次写入对应物理磁盘上的一次写入
-- RAID-1和10：RAID-1 和RAID-10的写惩罚很简单理解，因为数据的镜像存在的，所以一次写入会有两次。
-- RAID-5：RAID-5由于要计算校验位的机制存在，需要读数据、读校验位、写数据、写校验位四个步骤，所以RAID-5的写惩罚值是4。
-- RAID-6：RAID-6由于有两个校验位的存在，与RAID-5相比，需要读取两次校验位和写入两次校验位，所以RAID-6的写惩罚值是6。
-RAID Level | Write Penalty
-0 | 1
-1 | 2
-5 | 4
-6 | 6
-10 | 2
-
-
-## 计算IOPS
-
->物理磁盘总的IOPS = 物理磁盘的IOPS × 磁盘数目 
->可用的IOPS = （物理磁盘总的IOPS × 写百分比 ÷ RAID写惩罚） + （物理磁盘总的IOPS × 读百分比）
-
-     假设组成RAID-5的物理磁盘总共可以提供500 IOPS，使用该存储的应用程序读写比例是50%/50%，那么对于前端主机而言，实际可用的IOPS是：
-（500 ×50% ÷ 4）+ ( 500 * 50%) = 312.5 IOPS
-
 
 # 虚拟磁盘
 
@@ -670,77 +720,6 @@ VHD/VHDX 是HyperV 适用的虚拟磁盘格式，支持COW。
 
 
 
-# 多路径
-作用：
-- 冗余，A/P模式，使用一半的路径，当前路径出现故障即切换到备选路径。
-- 提高性能，A/A模式，I/O以round-robin方式通过所有路径。
-
-
-## SAN故障点：
-- HBA
-- FC线
-- SAN交换机
-- 阵列控制器端口
-
-
-![active-passive](images/active-passive.png "Active/Passive模式")
-
-
-![active-active](images/active-active.png "Active/Active模式")
-
-
-
-## 多路径软件
-- multipathd，基于device-mapper
-- UltraPath，
-
-
-## multipath常用命令
-- 加载多路径模块
-```
-[root@host18 ~]# modprobe dm_multipath
-```
-
-- 配置多路径
-```
-[root@host18 ~]# cp /usr/share/doc/device-mapper-multipath-0.4.9/multipath.conf /etc/multipath.conf
-```
-
-- 启动多路径服务
-```
-[root@host18 ~]# systemctl start multipathd
-```
-
-
-格式化多路径
-```
-[root@host18 ~]# multipath -v2
-```
-
-查看多路径信息
-```
-[root@host18 ~]# multipath -ll
-mpathr (222ed0001554cc6c9) dm-14 Sugon   ,DS600 G10       
-size=180G features='0' hwhandler='0' wp=rw
-`-+- policy='round-robin 0' prio=1 status=active
-  |- 9:0:0:8   sdaf 65:240 active ready running
-  |- 10:0:0:8  sdan 66:112 active ready running
-  `- 11:0:0:8  sdk  8:160  active ready running
-mpathe (22204000155d0f409) dm-12 Sugon   ,DS600 G10       
-size=150G features='0' hwhandler='0' wp=rw
-`-+- policy='round-robin 0' prio=1 status=active
-  |- 9:0:0:10  sdak 66:64  active ready running
-  |- 10:0:0:10 sdar 66:176 active ready running
-  `- 11:0:0:10 sdm  8:192  active ready running
-```
-
-清除多路径
-```
-[root@host18 ~]# multipath -F
-```
-
-
-
 # 分布式存储
 
 
@@ -777,3 +756,21 @@ size=150G features='0' hwhandler='0' wp=rw
 ![](./images/ceph-arch.png)
 
 
+### 超融合
+超融合基础架构（Hyper-Converged Infrastructure，“HCI”）
+1. 在同一套单元设备中不仅仅具备计算、网络、存储和服务器虚拟化等资源和技术，
+2. 还包括备份软件、快照技术、重复数据删除、在线数据压缩等元素，
+3. 多套单元设备可以通过网络聚合起来，实现模块化的无缝横向扩展（scale-out），形成统一的资源池。
+![](./images/smartx.jpg)
+
+
+### 超融合优势
+- 以软件为核心，软件定义数据中心
+- 通用的x86节点融合了存储、计算、网络、虚拟化平台（hypervisor）
+ - 分布式存储架构，通过增加节点的方式横向扩容
+ - 高度自动化，部署、维护简便
+- 众多节点组成一个整体，统一管理分配资源
+
+
+### 超融合实现
+![](./images/nutanix-hyperv.jpg)
